@@ -1,0 +1,15 @@
+{"url" :"https://www.imdb.com/search/title/?groups=top_1000&count=100&start={}&ref_=adv_nxt",
+ "movie_details" :   {
+            "movie" : [],
+            "year" : [],
+            "certificate": [],
+            "runtime" : [],
+            "genre" : [],
+            "rating" : [],
+            "metascore": [],
+            "description": [],
+            "director" : [],
+            "stars" : [],
+            "votes" : []
+        }
+}
