@@ -1,0 +1,36 @@
+{"imdb" : {
+		"url" :"https://www.imdb.com/search/title/?groups=top_1000&count=100&start={}&ref_=adv_nxt",
+		"movie_details" :   {
+			    "movie" : [],
+			    "year" : [],
+			    "certificate": [],
+			    "runtime" : [],
+			    "genre" : [],
+			    "rating" : [],
+			    "metascore": [],
+			    "description": [],
+			    "director" : [],
+			    "stars" : [],
+			    "votes" : [],
+			    "gross" : [],
+			    "top_250": []
+			},
+		"to_csv_path" : "/home/sunil/webscraping/movies/top_1000.csv"
+	},
+ "toscrape" : {
+ 
+ 		"url_pgn" : "https://books.toscrape.com",
+		"url_books": "https://books.toscrape.com/catalogue/page-{}.html",
+		"book_details" : {
+		
+			    "book" : [],
+			    "image_url": [],
+			    "price" : [],
+			    "rating" : [],
+			    "in_stock" : [],
+			    "description" : [],
+			    "description_url" : []
+		},
+	        "to_csv_path" : "/home/sunil/webscraping/toscrape/top_books.csv"	
+ 	}
+}

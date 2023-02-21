@@ -10,6 +10,9 @@
             "description": [],
             "director" : [],
             "stars" : [],
-            "votes" : []
-        }
+            "votes" : [],
+	    "gross" : [],
+	    "top_250": []
+        },
+"to_csv_path" : "/home/sunil/webscraping/movies/top_1000.csv"
 }
