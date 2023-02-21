@@ -5,6 +5,7 @@ import json
 import logging
 import copy
 import re
+import traceback
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -30,7 +31,7 @@ class IMDB():
 
     def process_soup(self, movie_tags):
         try:
-            for tag in movie_tags:
+            for index, tag in enumerate(movie_tags):
                 self.movie_details = self._get_movie_title_and_year(tag)
                 self.movie_details = self._get_movie_certificate(tag)
                 self.movie_details = self._get_movie_runtime(tag)
@@ -42,12 +43,27 @@ class IMDB():
                 self.movie_details = self._get_movie_votes(tag)
                 #break
         except Exception as e:
-            logging.debug(tag)
+            logging.debug(e)
+            logging.debug(index)
         return self.movie_details
     
     def _get_movie_votes(self, tag):
-        votes = tag.find('span', {'name': 'nv'}).text.strip()
-        self.movie_details['votes'].append(votes)
+        monetary = tag.find_all('span', {'name': 'nv'})
+        try:
+            if len(monetary) == 1:
+                self.movie_details['votes'].append(monetary[0].text.strip())
+                self.movie_details['gross'].append(None)
+                self.movie_details['top_250'].append(None)
+            elif len(monetary) == 2:
+                self.movie_details['votes'].append(monetary[0].text.strip())
+                self.movie_details['gross'].append(monetary[1].text.strip())
+                self.movie_details['top_250'].append(None)
+            else:
+                self.movie_details['votes'].append(monetary[0].text.strip())
+                self.movie_details['gross'].append(monetary[1].text.strip())
+                self.movie_details['top_250'].append(monetary[2].text.strip())
+        except Exception as e:
+            logging.debug(monetary)
         return self.movie_details
 
     def _get_movie_director_and_stars(self, tag):
@@ -63,11 +79,20 @@ class IMDB():
 
     def _get_movie_description(self, tag):
         description = tag.find_all('p', class_='text-muted')[1].text.strip()
+        import string
+        description = "".join([i for i in description if i not in string.punctuation])
         self.movie_details['description'].append(description)
         return self.movie_details
 
     def _get_movie_metascore(self, tag):
-        metascore = tag.find('span', class_='metascore').text.strip()
+        try:
+            metascore = tag.find('span', class_='metascore favorable').text.strip()
+        except Exception as e:
+            try:
+                metascore = tag.find('span', class_='metascore mixed').text.strip()
+            except Exception as e:
+                self.movie_details['metascore'].append(None)
+                return self.movie_details
         self.movie_details['metascore'].append(metascore)
         return self.movie_details
     
@@ -87,35 +112,42 @@ class IMDB():
         return self.movie_details
 
     def _get_movie_certificate(self, tag):
-        certificate = tag.find('span', class_='certificate').text.strip()
-        self.movie_details['certificate'].append(certificate)
+        #import pdb;pdb.set_trace()
+        try:
+            certificate = tag.find('span', class_='certificate').text.strip()
+            self.movie_details['certificate'].append(certificate)
+        except Exception as e:
+            self.movie_details['certificate'].append(None)
         return self.movie_details
     
     def _get_movie_title_and_year(self, tag):
-        logging.debug('Insed tile_nad year')
         try:
             movie_name = tag.find('a').text.strip()
             year = re.findall("\d+", tag.find('h3').text.split("(")[1])[0]
             self.movie_details['movie'].append(movie_name)
             self.movie_details['year'].append(year)
-            return self.movie_details
         except Exception as e:
-            logging.debug(movie_name, year)
+            year = re.findall("\d+", tag.find('h3').text)
+            self.movie_details['movie'].append(movie_name)
+            self.movie_details['year'].append(year[1])
+
+        return self.movie_details
 
 if __name__ == "__main__":
     
-    with open("config.json", 'r') as conf:
+    with open("../config.json", 'r') as conf:
         data = json.load(conf)
 
     movie_tags = []
     try:
-        for start in range(1, 202, 100):
-            imdb = copy.deepcopy(IMDB(data["url"], data['movie_details']))
+        for start in range(1, 902, 100):
+            imdb = copy.deepcopy(IMDB(data['imdb']["url"], data['imdb']['movie_details']))
             movie_tags  = imdb.fetch_movies(start, movie_tags)
         final_output = imdb.process_soup(movie_tags)
         df = pd.DataFrame(final_output)
-        print(df.head(10))
+        df.to_csv(data['imdb']['to_csv_path'])
     except Exception as e:
+        logging.debug("I am in the exception")
         logging.debug(e)
 
 
