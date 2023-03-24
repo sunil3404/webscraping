@@ -32,5 +32,22 @@
 			    "description_url" : []
 		},
 	        "to_csv_path" : "/home/sunil/webscraping/toscrape/top_books.csv"	
- 	}
+ 	},
+"quotes" : {
+
+		"url_quotes" : "http://quotes.toscrape.com/",
+		"quotes": {
+			    
+				"quote" : [],
+				"author": [],
+				"author_dob" : [],
+				"author_loc" : [],
+				"author_desc" : [],
+				"tags": []
+
+
+		},
+		"to_csv_path" : "/home/sunil/webscraping/quotes/quotes.csv"
+	}
+
 }
